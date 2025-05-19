@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from .routes.api import router
+from app.routes import plan
 from .middleware.logging import LoggingMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -27,11 +28,10 @@ app.add_middleware(LoggingMiddleware)
 
 # Include routes
 app.include_router(router, prefix="/api")
+app.include_router(plan.router)
 
 @app.get("/")
 def read_root():
     return {
-        "message": "Hello World from FastAPI!",
-        "app_name": os.getenv("APP_NAME", "FastAPI Backend"),
-        "version": os.getenv("API_VERSION", "v1")
+        
     } 

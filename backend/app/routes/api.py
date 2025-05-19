@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
+from datetime import datetime, timedelta
 from ..controllers.user_controller import UserController
-from ..models.user import User
+from ..models.user import User, StudyPlanRequest
 
 router = APIRouter()
 

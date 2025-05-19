@@ -1,145 +1,106 @@
-import { useState, useEffect } from 'react';
-import { checkBackendStatus } from '../services/api';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Navbar from '../components/Navbar';
+import React, { useState } from "react";
+import { generateStudyPlan } from "../services/api";
 
-export default function Home() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [backendStatus, setBackendStatus] = useState(null);
-  const [error, setError] = useState(null);
-  // Get the current hostname and port from the browser
-  const currentUrl = window.location.origin;
+const Home = () => {
+  const [subjects, setSubjects] = useState([{ name: "", chapters: "", knowledge: "" }]);
+  const [examDate, setExamDate] = useState("");
+  const [plan, setPlan] = useState([]);
 
-  useEffect(() => {
-    setIsVisible(true);
-    const fetchBackendStatus = async () => {
-      try {
-        const data = await checkBackendStatus();
-        setBackendStatus(data);
-      } catch (err) {
-        setError('Failed to connect to backend');
-      }
-    };
-    fetchBackendStatus();
-  }, []);
+  const handleAddSubject = () => {
+    setSubjects([...subjects, { name: "", chapters: "", knowledge: "" }]);
+  };
+
+  const handleSubjectChange = (index, field, value) => {
+    const updatedSubjects = [...subjects];
+    updatedSubjects[index][field] = value;
+    setSubjects(updatedSubjects);
+  };
+
+  const handleSubmit = async () => {
+    const response = await generateStudyPlan({ subjects, examDate });
+    setPlan(response.plan || []);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      <Navbar />
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        {/* Main Content */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          {/* Backend Status */}
-          <div className="p-6 border-b border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Backend Status</h2>
-            {backendStatus ? (
-              <div className="bg-green-50 p-4 rounded-md">
-                <h3 className="font-medium text-green-800 mb-2">Backend is Running! 🚀</h3>
-                <div className="space-y-2">
-                  <p className="text-green-700">Message: {backendStatus.message}</p>
-                  <p className="text-green-700">App Name: {backendStatus.app_name}</p>
-                  <p className="text-green-700">Version: {backendStatus.version}</p>
-                </div>
-              </div>
-            ) : error ? (
-              <div className="bg-red-50 p-4 rounded-md">
-                <h3 className="font-medium text-red-800 mb-2">Backend Connection Error</h3>
-                <p className="text-red-700">{error}</p>
-              </div>
-            ) : (
-              <div className="bg-yellow-50 p-4 rounded-md">
-                <h3 className="font-medium text-yellow-800 mb-2">Checking Backend Status...</h3>
-                <p className="text-yellow-700">Please wait while we connect to the backend.</p>
-              </div>
-            )}
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6">
+    
+      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
+        <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">
+          📚 Smart Study Planner
+        </h1>
 
-          {/* Success Message */}
-          <div className="p-6 border-b border-gray-100 bg-green-50">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Frontend Setup Successful! 🎉</h2>
-            <p className="text-gray-600">
-              If you're seeing this page, your GUVI Hackathon FSD Setup frontend is up and running correctly.
-            </p>
-          </div>
-
-          {/* Get Started Section */}
-          <div className="p-6 border-b border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Getting Started</h2>
-            <div className="space-y-4">
-              <div className="bg-blue-50 p-4 rounded-md">
-                <p className="mb-2 text-gray-800">Run your frontend development server:</p>
-                <div className="bg-gray-800 text-gray-100 p-2 rounded-md overflow-x-auto">
-                  <code>make run-local</code>
-                </div>
-              </div>
-              
-              <p className="text-gray-600">
-                Your frontend will be available at <code className="bg-gray-100 px-1 py-0.5 rounded">{currentUrl}</code>
-              </p>
+        <div className="space-y-4">
+          {subjects.map((subject, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center"
+            >
+              <input
+                type="text"
+                placeholder="Subject"
+                value={subject.name}
+                onChange={(e) =>
+                  handleSubjectChange(index, "name", e.target.value)
+                }
+                className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
+              />
+              <input
+                type="number"
+                placeholder="Chapters"
+                value={subject.chapters}
+                onChange={(e) =>
+                  handleSubjectChange(index, "chapters", e.target.value)
+                }
+                className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
+              />
+              <input
+                type="number"
+                placeholder="% Knowledge"
+                value={subject.knowledge}
+                onChange={(e) =>
+                  handleSubjectChange(index, "knowledge", e.target.value)
+                }
+                className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
+              />
             </div>
-          </div>
-
-          {/* Where to Code Section */}
-          <div className="p-6 border-b border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Where to Code</h2>
-            
-            <div className="bg-gray-50 p-4 rounded-md">
-              <h3 className="font-medium text-gray-900 mb-2">Frontend Structure</h3>
-              <p className="text-gray-600 text-sm mb-2">Add new pages in:</p>
-              <code className="text-sm bg-gray-100 px-2 py-1 rounded block">frontend/src/pages/</code>
-              <p className="text-gray-600 text-sm mt-2 mb-2">Add components in:</p>
-              <code className="text-sm bg-gray-100 px-2 py-1 rounded block">frontend/src/components/</code>
-            </div>
-            
-            <div className="bg-green-50 p-4 rounded-md text-gray-800 mt-4">
-              <p>Try adding a new page or component to see how everything works together. The changes will automatically refresh in your browser!</p>
-            </div>
-          </div>
-          
-          {/* Deploy Section */}
-          <div className="p-6 border-b border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Ready to Deploy?</h2>
-            <div className="bg-gray-50 p-4 rounded-md">
-              <p className="mb-2 text-gray-800">Deploy your frontend to Netlify:</p>
-              <div className="bg-gray-800 text-gray-100 p-2 rounded-md overflow-x-auto">
-                <code>make deploy</code>
-              </div>
-              <p className="mt-2 text-sm text-gray-600">
-                This will build your project and guide you through the deployment process.
-              </p>
-            </div>
-          </div>
-          
-          {/* Resources Section */}
-          <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Resources</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              <a href="https://react.dev" target="_blank" rel="noopener noreferrer" className="block p-3 bg-purple-50 rounded-md hover:bg-purple-100 transition-colors">
-                <h3 className="font-medium text-gray-900 mb-1">React Docs</h3>
-                <p className="text-xs text-gray-600">Frontend framework</p>
-              </a>
-              <a href="https://tailwindcss.com/docs" target="_blank" rel="noopener noreferrer" className="block p-3 bg-teal-50 rounded-md hover:bg-teal-100 transition-colors">
-                <h3 className="font-medium text-gray-900 mb-1">Tailwind CSS</h3>
-                <p className="text-xs text-gray-600">Styling utilities</p>
-              </a>
-              <a href="https://docs.netlify.com" target="_blank" rel="noopener noreferrer" className="block p-3 bg-emerald-50 rounded-md hover:bg-emerald-100 transition-colors">
-                <h3 className="font-medium text-gray-900 mb-1">Netlify Docs</h3>
-                <p className="text-xs text-gray-600">Frontend hosting</p>
-              </a>
-              <a href="https://hackathon.guvi.in?hackathon-id=asdasd-asd-asd-sadsad" target="_blank" rel="noopener noreferrer" className="block p-3 bg-amber-50 rounded-md hover:bg-amber-100 transition-colors">
-                <h3 className="font-medium text-gray-900 mb-1">Hackathon Portal</h3>
-                <p className="text-xs text-gray-600">GUVI Hackathon</p>
-              </a>
-            </div>
-          </div>
+          ))}
         </div>
-        
-        {/* Footer Message */}
-        <div className="mt-8 text-center">
-          <p className="text-lg font-medium text-gray-700">Frontend is Ready! 🚀</p>
-          <p className="text-gray-500 mt-2">Start building your amazing frontend application!</p>
+
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={handleAddSubject}
+            className="text-blue-600 hover:text-blue-800 font-semibold"
+          >
+            ➕ Add Another Subject
+          </button>
+          <input
+            type="date"
+            value={examDate}
+            onChange={(e) => setExamDate(e.target.value)}
+            className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
+          />
         </div>
+
+        <button
+          onClick={handleSubmit}
+          className="mt-6 w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition duration-300 font-semibold"
+        >
+          Generate Study Plan 🧠
+        </button>
+
+        {plan.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Your Study Plan</h2>
+            <ul className="space-y-2 list-disc pl-6">
+              {plan.map((item, idx) => (
+                <li key={idx} className="text-gray-700">{item}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
-} 
+};
+
+export default Home;
