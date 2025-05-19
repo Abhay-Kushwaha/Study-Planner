@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { generateStudyPlan } from "../services/api";
+import Navbar from "../components/Navbar";
 
 const Home = () => {
   const [subjects, setSubjects] = useState([{ name: "", chapters: "", knowledge: "" }]);
@@ -29,7 +30,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6">
-
+      <Navbar />
       <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
         <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">
           📚 Smart Study Planner
@@ -101,19 +102,19 @@ const Home = () => {
               <table className="min-w-full bg-white border border-gray-200">
                 <thead>
                   <tr>
-                    <th className="px-4 py-2 border-b text-left bg-blue-100 text-blue-700">Date</th>
-                    <th className="px-4 py-2 border-b text-left bg-blue-100 text-blue-700">Time Slot</th>
-                    <th className="px-4 py-2 border-b text-left bg-blue-100 text-blue-700">Subject</th>
-                    <th className="px-4 py-2 border-b text-left bg-blue-100 text-blue-700">Chapter</th>
+                    <th className="px-4 py-2 border-b bg-blue-100 text-blue-700">Date</th>
+                    <th className="px-4 py-2 border-b bg-blue-100 text-blue-700">Time Slot</th>
+                    <th className="px-4 py-2 border-b bg-blue-100 text-blue-700">Subject</th>
+                    <th className="px-4 py-2 border-b bg-blue-100 text-blue-700">Chapter</th>
                   </tr>
                 </thead>
                 <tbody>
                   {plan.map((item, idx) => (
                     <tr key={idx} className="hover:bg-blue-50">
-                      <td className="px-4 py-2 border-b">{item.date}</td>
-                      <td className="px-4 py-2 border-b">{item.time_slot}</td>
-                      <td className="px-4 py-2 border-b">{item.subject}</td>
-                      <td className="px-4 py-2 border-b">{item.chapter}</td>
+                      <td className="px-4 py-2 border">{item.date}</td>
+                      <td className="px-4 py-2 border">{item.time_slot}</td>
+                      <td className="px-4 py-2 border">{item.subject}</td>
+                      <td className="px-4 py-2 border">{item.chapter}</td>
                     </tr>
                   ))}
                 </tbody>

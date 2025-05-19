@@ -1,4 +1,18 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'; // update port if using FastAPI locally
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+import axios from "axios";
+
+const instance = axios.create({
+    baseURL: import.meta.env.VITE_API_URL || "http://localhost:3001",
+    headers: {
+        "Content-Type": "application/json",
+    },
+});
+instance.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
+export default instance;
 
 export const checkBackendStatus = async () => {
     try {
