@@ -67,6 +67,20 @@ const StudyPlanner = () => {
         setLoading(false);
     };
 
+    // Save plan to localStorage
+    const handleSavePlan = () => {
+        if (!plan) return;
+        const savedPlans = JSON.parse(localStorage.getItem("studyPlans") || "[]");
+        const newPlan = {
+            id: Date.now(),
+            examDate,
+            subjects,
+            plan: plan.study_plan,
+        };
+        localStorage.setItem("studyPlans", JSON.stringify([newPlan, ...savedPlans]));
+        alert("Plan saved! Check Dashboard.");
+    };
+
     return (
         <div>
             <h2 className="text-3xl font-bold text-center text-blue-700 mb-8">
@@ -169,6 +183,12 @@ const StudyPlanner = () => {
                     <h3 className="text-2xl font-bold text-blue-700 mb-4">
                         Your Study Plan 📅
                     </h3>
+                    <button
+                        onClick={handleSavePlan}
+                        className="mb-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition font-semibold"
+                    >
+                        💾 Save Plan
+                    </button>
                     <div className="overflow-x-auto">
                         <table className="min-w-full border border-gray-300 text-center">
                             <thead className="bg-gray-100">

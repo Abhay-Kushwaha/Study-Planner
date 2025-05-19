@@ -1,12 +1,12 @@
 import React from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        navigate("/login");
+        navigate("/");
     };
 
     return (
@@ -17,15 +17,33 @@ const Sidebar = () => {
                     📘 Study App
                 </h2>
                 <nav className="flex flex-col gap-4">
-                    <Link to="/dashboard" className="text-gray-700 hover:text-blue-700 font-medium px-2 py-2 rounded hover:bg-blue-50 transition">
+                    <NavLink
+                        to="/dashboard"
+                        className={({ isActive }) =>
+                            `text-gray-700 font-medium px-2 py-2 rounded transition
+                            ${isActive ? "bg-blue-600 text-white shadow" : "hover:text-blue-700 hover:bg-blue-50"}`
+                        }
+                    >
                         Dashboard
-                    </Link>
-                    <Link to="/planner" className="text-gray-700 hover:text-blue-700 font-medium px-2 py-2 rounded hover:bg-blue-50 transition">
+                    </NavLink>
+                    <NavLink
+                        to="/planner"
+                        className={({ isActive }) =>
+                            `text-gray-700 font-medium px-2 py-2 rounded transition
+                            ${isActive ? "bg-blue-600 text-white shadow" : "hover:text-blue-700 hover:bg-blue-50"}`
+                        }
+                    >
                         Planner
-                    </Link>
-                    <Link to="/about" className="text-gray-700 hover:text-blue-700 font-medium px-2 py-2 rounded hover:bg-blue-50 transition">
+                    </NavLink>
+                    <NavLink
+                        to="/about"
+                        className={({ isActive }) =>
+                            `text-gray-700 font-medium px-2 py-2 rounded transition
+                            ${isActive ? "bg-blue-600 text-white shadow" : "hover:text-blue-700 hover:bg-blue-50"}`
+                        }
+                    >
                         About
-                    </Link>
+                    </NavLink>
                 </nav>
             </div>
 

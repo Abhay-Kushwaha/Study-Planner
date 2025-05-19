@@ -23,6 +23,10 @@ class LoginData(BaseModel):
     email: str
     password: str
 
+class SignupData(BaseModel):
+    email: str
+    password: str
+
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -35,3 +39,14 @@ def login(data: LoginData):
     expire = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
     token = jwt.encode({"sub": data.email, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
     return {"access_token": token, "token_type": "bearer"}
+
+@router.post("/auth/signup")
+def signup(data: SignupData):
+    if data.email in fake_users_db:
+        raise HTTPException(status_code=400, detail="User already exists")
+    hashed_password = pwd_context.hash(data.password)
+    fake_users_db[data.email] = {
+        "email": data.email,
+        "hashed_password": hashed_password
+    }
+    return {"msg": "User created successfully"}
