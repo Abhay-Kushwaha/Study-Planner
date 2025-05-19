@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 def generate_custom_plan(subjects, exam_date_str):
     today = datetime.now().date()
     exam_date = datetime.strptime(exam_date_str, "%Y-%m-%d").date()
-
     total_days = (exam_date - today).days
+    print("DEBUG:", subjects, exam_date_str, total_days)  # <--- Add this line
     if total_days <= 0:
         return []
 
@@ -14,10 +14,10 @@ def generate_custom_plan(subjects, exam_date_str):
     # Step 1: Prepare study items
     study_items = []
     for subject in subjects:
-        chapters_to_study = int(round(subject["chapters"] * (1 - subject["knowledge"] / 100)))
+        chapters_to_study = int(round(subject.chapters * (1 - subject.knowledge / 100)))
         for ch_num in range(1, chapters_to_study + 1):
             study_items.append({
-                "subject": subject["name"],
+                "subject": subject.name,
                 "chapter": f"Chapter {ch_num}"
             })
 

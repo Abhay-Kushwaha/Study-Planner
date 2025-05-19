@@ -17,13 +17,19 @@ const Home = () => {
   };
 
   const handleSubmit = async () => {
-    const response = await generateStudyPlan({ subjects, examDate });
-    setPlan(response.plan || []);
+    // Convert chapters and knowledge to numbers before sending
+    const cleanedSubjects = subjects.map(sub => ({
+      ...sub,
+      chapters: Number(sub.chapters),
+      knowledge: Number(sub.knowledge),
+    }));
+    const response = await generateStudyPlan({ subjects: cleanedSubjects, exam_date: examDate });
+    setPlan(response.study_plan || []);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6">
-    
+
       <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
         <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">
           📚 Smart Study Planner
@@ -91,11 +97,28 @@ const Home = () => {
         {plan.length > 0 && (
           <div className="mt-8">
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">Your Study Plan</h2>
-            <ul className="space-y-2 list-disc pl-6">
-              {plan.map((item, idx) => (
-                <li key={idx} className="text-gray-700">{item}</li>
-              ))}
-            </ul>
+            <div className="overflow-x-auto rounded shadow">
+              <table className="min-w-full bg-white border border-gray-200">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-2 border-b text-left bg-blue-100 text-blue-700">Date</th>
+                    <th className="px-4 py-2 border-b text-left bg-blue-100 text-blue-700">Time Slot</th>
+                    <th className="px-4 py-2 border-b text-left bg-blue-100 text-blue-700">Subject</th>
+                    <th className="px-4 py-2 border-b text-left bg-blue-100 text-blue-700">Chapter</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {plan.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-blue-50">
+                      <td className="px-4 py-2 border-b">{item.date}</td>
+                      <td className="px-4 py-2 border-b">{item.time_slot}</td>
+                      <td className="px-4 py-2 border-b">{item.subject}</td>
+                      <td className="px-4 py-2 border-b">{item.chapter}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

@@ -30,14 +30,15 @@ const StudyPlanner = () => {
         }
 
         try {
-            console.log({
-                subjects,
-                exam_date: examDate,
-            });
             const data = await generateStudyPlan({
                 subjects,
                 exam_date: examDate,
             });
+            // console.log({
+            //     subjects,
+            //     exam_date: examDate,
+            // });
+            // console.log("Generated Plan:", data);
             setPlan(data);
         } catch (error) {
             console.error("Error generating plan:", error);

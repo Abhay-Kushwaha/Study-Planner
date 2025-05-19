@@ -24,6 +24,7 @@ export const generateStudyPlan = async (payload) => {
         if (!response.ok) throw new Error("No response from backend");
 
         const data = await response.json();
+        console.log("Generated Study Plan:", data);
         return data;
     } catch (error) {
         console.error("Error generating study plan:", error);
