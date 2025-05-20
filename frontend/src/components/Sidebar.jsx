@@ -14,7 +14,7 @@ const Sidebar = () => {
             {/* Top: Logo + Navigation */}
             <div>
                 <h2 className="text-2xl font-bold text-blue-700 mb-8 text-center">
-                    📘 Study App
+                    📘Study Planner
                 </h2>
                 <nav className="flex flex-col gap-4">
                     <NavLink

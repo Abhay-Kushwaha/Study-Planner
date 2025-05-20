@@ -27,12 +27,13 @@ app.add_middleware(
 app.add_middleware(LoggingMiddleware)
 
 # Include routes
-app.include_router(router, prefix="/api")
+app.include_router(router)
+# app.include_router(router, prefix="/api")
 app.include_router(plan.router)
-app.include_router(auth.router)
+app.include_router(auth.router, prefix="/api")
 
 @app.get("/")
 def read_root():
     return {
         
-    } 
+    }

@@ -1,4 +1,19 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+import google.generativeai as genai
+import os
+import re
+import json
+
+def load_api_key():
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    key_path = os.path.join(base_dir, "venv", "key.txt")
+    with open(key_path, "r") as f:
+        for line in f:
+            if line.strip().startswith("API_KEY"):
+                return line.strip().split("=", 1)[1].strip()
+    raise ValueError("API_KEY not found in venv/key.txt")
+
+API_KEY = load_api_key()
 
 def generate_custom_plan(subjects, exam_date_str):
     today = datetime.now().date()
@@ -6,32 +21,34 @@ def generate_custom_plan(subjects, exam_date_str):
     total_days = (exam_date - today).days
     if total_days <= 0:
         return []
+    prompt = (
+        "You are a study planner assistant. "
+        "Given the following subjects, chapters, and knowledge levels, "
+        "and the exam date, create a detailed study plan. "
+        "Distribute chapters across days and time slots (Morning, Afternoon, Evening) "
+        "from today ({today}) to the exam date ({exam_date}). "
+        "Return the plan as a JSON list of objects with keys: date (YYYY-MM-DD), time_slot, subject, chapter.\n\n"
+        "Subjects:\n"
+    ).format(today=today, exam_date=exam_date)
 
-    time_slots = ["Morning", "Afternoon", "Evening"]
-    total_slots = total_days * len(time_slots)
-    study_items = []
     for subject in subjects:
-        chapters_to_study = int(round(subject.chapters * (1 - subject.knowledge / 100)))
-        for ch_num in range(1, chapters_to_study + 1):
-            study_items.append({
-                "subject": subject.name,
-                "chapter": f"Chapter {ch_num}"
-            })
-    plan = []
-    index = 0
-    for day_offset in range(total_days):
-        current_date = today + timedelta(days=day_offset)
-        for slot in time_slots:
-            if index >= len(study_items):
-                break
-            item = study_items[index]
-            plan.append({
-                "date": current_date.strftime("%Y-%m-%d"),
-                "time_slot": slot,
-                "subject": item["subject"],
-                "chapter": item["chapter"]
-            })
-            index += 1
-        if index >= len(study_items):
-            break
-    return plan
+        prompt += f"- {subject.name}: {subject.chapters} chapters, knowledge {subject.knowledge}%\n"
+    prompt += f"\nExam Date: {exam_date}\n"
+    try:
+        genai.configure(api_key=API_KEY)
+        model = genai.GenerativeModel("models/gemini-1.5-flash")
+        response = model.generate_content(prompt)
+        raw = response.text
+        match = re.search(r"\[.*\]", raw, re.DOTALL)
+        if match:
+            json_str = match.group(0)
+            try:
+                plan = json.loads(json_str)
+            except Exception:
+                plan = []
+        else:
+            plan = []
+        return plan
+    except Exception as e:
+        print("Exception occurred:", e)
+        return []

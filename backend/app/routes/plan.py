@@ -17,4 +17,4 @@ class PlanRequest(BaseModel):
 @router.post("/generate-plan")
 def create_plan(data: PlanRequest):
     plan = generate_custom_plan(data.subjects, data.exam_date)
-    return { "study_plan": plan }
+    return {"study_plan": plan}
