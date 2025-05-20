@@ -17,10 +17,10 @@ app = FastAPI(
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Add logging middleware
@@ -28,12 +28,15 @@ app.add_middleware(LoggingMiddleware)
 
 # Include routes
 app.include_router(router)
-# app.include_router(router, prefix="/api")
 app.include_router(plan.router)
 app.include_router(auth.router, prefix="/api")
 
 @app.get("/")
 def read_root():
-    return {
-        
-    }
+    return {"message": "API is alive!"}
+
+# 🔥 This block is REQUIRED for Railway or any production container platform
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=port)

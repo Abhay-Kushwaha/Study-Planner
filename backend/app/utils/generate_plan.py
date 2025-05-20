@@ -3,16 +3,14 @@ import google.generativeai as genai
 import os
 import re
 import json
+from dotenv import load_dotenv
+load_dotenv()
 
 def load_api_key():
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    key_path = os.path.join(base_dir, "venv", "key.txt")
-    with open(key_path, "r") as f:
-        for line in f:
-            if line.strip().startswith("API_KEY"):
-                return line.strip().split("=", 1)[1].strip()
-    raise ValueError("API_KEY not found in venv/key.txt")
-
+    api_key = os.getenv("API_KEY")
+    if not api_key:
+        raise ValueError("API_KEY not set in environment variables")
+    return api_key
 API_KEY = load_api_key()
 
 def generate_custom_plan(subjects, exam_date_str):
